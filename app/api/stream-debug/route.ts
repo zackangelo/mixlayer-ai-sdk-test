@@ -1,59 +1,62 @@
-import { streamText } from "ai"
-import { mixlayer } from "@/lib/mixlayer-provider"
-import type { NextRequest } from "next/server"
+import { streamText } from "ai";
+import { mixlayer } from "@mixlayer/ai-sdk-provider";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt, model } = await req.json()
+    const { prompt, model } = await req.json();
 
     if (!prompt) {
-      return new Response("Prompt is required", { status: 400 })
+      return new Response("Prompt is required", { status: 400 });
     }
 
     const result = streamText({
       model: mixlayer(model || "meta/llama3.3-70b-instruct"),
       prompt,
       maxTokens: 1000,
-    })
+    });
 
     // Create a custom readable stream with detailed logging
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          console.log("Starting custom stream...")
+          console.log("Starting custom stream...");
 
-          let chunkCount = 0
+          let chunkCount = 0;
           for await (const textPart of result.textStream) {
-            chunkCount++
-            console.log(`Chunk ${chunkCount}:`, JSON.stringify(textPart))
+            chunkCount++;
+            console.log(`Chunk ${chunkCount}:`, JSON.stringify(textPart));
 
             // Send as Server-Sent Events format
             const sseData = `data: ${JSON.stringify({
               type: "text",
               content: textPart,
               chunkIndex: chunkCount,
-            })}\n\n`
+            })}\n\n`;
 
-            controller.enqueue(new TextEncoder().encode(sseData))
+            controller.enqueue(new TextEncoder().encode(sseData));
           }
 
           // Send completion event
-          const completeData = `data: ${JSON.stringify({ type: "complete" })}\n\n`
-          controller.enqueue(new TextEncoder().encode(completeData))
+          const completeData = `data: ${JSON.stringify({
+            type: "complete",
+          })}\n\n`;
+          controller.enqueue(new TextEncoder().encode(completeData));
 
-          console.log(`Stream completed with ${chunkCount} chunks`)
-          controller.close()
+          console.log(`Stream completed with ${chunkCount} chunks`);
+          controller.close();
         } catch (error) {
-          console.error("Custom streaming error:", error)
+          console.error("Custom streaming error:", error);
           const errorData = `data: ${JSON.stringify({
             type: "error",
+            // @ts-ignore
             message: error.message,
-          })}\n\n`
-          controller.enqueue(new TextEncoder().encode(errorData))
-          controller.close()
+          })}\n\n`;
+          controller.enqueue(new TextEncoder().encode(errorData));
+          controller.close();
         }
       },
-    })
+    });
 
     return new Response(stream, {
       headers: {
@@ -64,9 +67,12 @@ export async function POST(req: NextRequest) {
         "Access-Control-Allow-Methods": "POST",
         "Access-Control-Allow-Headers": "Content-Type",
       },
-    })
+    });
   } catch (error) {
-    console.error("Debug streaming setup error:", error)
-    return new Response(`Failed to setup stream: ${error.message}`, { status: 500 })
+    console.error("Debug streaming setup error:", error);
+    // @ts-ignore
+    return new Response(`Failed to setup stream: ${error.message}`, {
+      status: 500,
+    });
   }
 }

@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
-      '@ai-sdk/openai-compatible':
-        specifier: latest
-        version: 0.2.15(zod@3.24.1)
       '@hookform/resolvers':
         specifier: ^3.9.1
         version: 3.9.1(react-hook-form@7.54.1(react@19.0.0))
+      '@mixlayer/ai-sdk-provider':
+        specifier: ^0.0.3
+        version: 0.0.3(ai@4.3.18(react@19.0.0)(zod@3.24.1))(zod@3.24.1)
       '@radix-ui/react-accordion':
         specifier: 1.2.2
         version: 1.2.2(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -367,6 +367,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.29':
     resolution: {integrity: sha512-uw6guiW/gcAGPDhLmd77/6lW8QLeiV5RUTsAX46Db6oLhGaVj4lhnPwb184s1bkc8kdVg/+h988dro8GRDpmYQ==}
+
+  '@mixlayer/ai-sdk-provider@0.0.3':
+    resolution: {integrity: sha512-Pr1bKHovg5W345+G66uwq3ua8UHAK6TuFzkjT293mXzWYqTTNLwrSnT+kcXn1USTlLPNf+EDGYEWKTqxiCVBHA==}
+    peerDependencies:
+      ai: ^4.0.0
 
   '@next/env@15.2.4':
     resolution: {integrity: sha512-+SFtMgoiYP3WoSswuNmxJOCwi06TdWE733D+WPjpXIe4LXGULwEaofiiAy6kbS0+XjM5xF5n3lKuBwN2SnqD9g==}
@@ -2314,6 +2319,13 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.4
+
+  '@mixlayer/ai-sdk-provider@0.0.3(ai@4.3.18(react@19.0.0)(zod@3.24.1))(zod@3.24.1)':
+    dependencies:
+      '@ai-sdk/openai-compatible': 0.2.15(zod@3.24.1)
+      ai: 4.3.18(react@19.0.0)(zod@3.24.1)
+    transitivePeerDependencies:
+      - zod
 
   '@next/env@15.2.4': {}
 
